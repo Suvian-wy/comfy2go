@@ -458,3 +458,17 @@ func (c *ComfyClient) Close() error {
 
 	return lastErr
 }
+
+// NodeObjects returns the cached node object definitions,
+// or nil if the client has not been initialized.
+func (c *ComfyClient) NodeObjects() *graphapi.NodeObjects {
+	return c.nodeobjects
+}
+
+// InitWithNodeObjects initializes the client using pre-fetched node objects,
+// skipping the /object_info HTTP call. Intended for callers that maintain
+// their own process-wide cache of node objects.
+func (c *ComfyClient) InitWithNodeObjects(n *graphapi.NodeObjects) {
+	c.nodeobjects = n
+	c.initialized = true
+}
