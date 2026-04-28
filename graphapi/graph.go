@@ -505,6 +505,16 @@ func (t *Graph) createInternalNodeProperties(sg *SubgraphDefinition, node_object
 
 func (t *Graph) ProcessSettableProperties(n *GraphNode, props *[]Property, pindex *int) {
 	for _, prop := range *props {
+		// When a widget-type input is connected via a link, ComfyUI hides
+		// the widget and excludes its value from widgets_values. Skip
+		// advancing pindex for linked inputs so subsequent widget indices
+		// stay aligned.
+		inputSlot := n.GetInputWithName(prop.Name())
+		if inputSlot != nil && inputSlot.Link != 0 {
+			n.affixPropertyToInputSlot(prop.Name(), nil)
+			continue
+		}
+
 		// convert to actual property type, deep copy
 		// store a pointer to the property in the node's
 		// correct Input
